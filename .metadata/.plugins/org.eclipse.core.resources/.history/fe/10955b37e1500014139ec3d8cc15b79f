@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btnLoadMyPictures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Load my images" />
+
+    <Button
+        android:id="@+id/btnLoadAllPictures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Load All images" />
+
+    <Button
+        android:id="@+id/btnCaptureImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take a picture" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/listImages"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </ListView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

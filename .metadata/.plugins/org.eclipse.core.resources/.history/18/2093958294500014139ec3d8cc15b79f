@@ -1,0 +1,51 @@
+package com.example.teamtiger;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.app.Activity;
+import android.os.Bundle;
+
+public class MapActivity extends Activity {
+	private final LatLng CURRENT_LOCATION = new LatLng(43, 23);
+	
+	private GoogleMap map;
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_map);
+
+        setUpMapIfNeeded();
+    }
+
+	private void setUpMapIfNeeded() {
+		if(map == null){
+	        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+	        
+	        if(map != null){
+		        setUpMap();
+	        }
+        }
+	}
+
+	private void setUpMap() {
+		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(CURRENT_LOCATION, 16);
+		map.animateCamera(update);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.map, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+}

@@ -1,0 +1,78 @@
+package com.example.teamtiger;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.app.Activity;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.app.Activity;
+import android.os.Bundle;
+
+public class MapActivity extends Activity {
+	private static LatLng currentLocation;
+	
+	private GoogleMap map;
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_map);
+
+        setUpMapIfNeeded();
+    }
+
+	private void setUpMapIfNeeded() {
+		if(map == null){
+	        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+	        
+	        if(map != null){
+		        setUpMap();
+	        }
+        }
+	}
+
+	private void setUpMap() {
+		// Enable finding location
+		map.setMyLocationEnabled(true);
+		
+		// Get location manager  object from System service LOCATION_SERVICE
+		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		
+		// Create a criteria object to retrieve provider
+		Criteria criteria = new Criteria();
+		
+		// Get the name of the best provider
+		String provider = locationManager.getBestProvider(criteria, true);
+		
+		// Get current location
+		Location myLocation = locationManager.getLastKnownLocation(provider);
+			
+		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+		
+		double latitude = myLocation.getLatitude();
+		double longitude = myLocation.getLongitude();
+		
+		currentLocation = new LatLng(latitude, longitude);
+		
+		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLocation, 16);
+		map.animateCamera(update);
+		
+		map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("I'm here"));
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.map, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+}

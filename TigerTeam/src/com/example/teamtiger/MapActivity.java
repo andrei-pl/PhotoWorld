@@ -1,0 +1,227 @@
+package com.example.teamtiger;
+
+import java.util.concurrent.ExecutionException;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+import android.app.Activity;
+import android.content.Context;
+import android.content.IntentSender;
+import android.os.Bundle;
+
+public class MapActivity extends Activity implements LocationListener, OnMyLocationChangeListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+	private static LatLng currentLocation;
+	private GoogleMap map;
+	private LocationClient mLocationClient;
+	private boolean isLocationFound;
+	private Location myLocation;
+	private String AddressName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_map);
+        
+        isLocationFound = false;
+        mLocationClient = new LocationClient(this, this, this);
+        AddressName = "";
+        
+        setUpMapIfNeeded();
+        onResume();
+    }
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		mLocationClient.connect();
+	}
+
+	@Override
+	protected void onStop() {
+		mLocationClient.disconnect();
+        super.onStop();
+	}
+
+	private void setUpMapIfNeeded() {
+		if(map == null){
+	        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+	        
+	        if(map != null){
+		        setUpMap();
+	        }
+        }
+	}
+
+	private void setUpMap() {
+		// Enable finding location
+		map.setMyLocationEnabled(true);
+		map.setOnMyLocationChangeListener(this);
+
+		// Create a criteria object to retrieve provider
+		Criteria criteria = new Criteria();
+//		LocationListener listener = new LocationListener(){
+//
+//			@Override
+//			public void onLocationChanged(Location arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}};
+		// Get location manager  object from System service LOCATION_SERVICE
+		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		
+		
+		// Get the name of the best provider
+		String provider = locationManager.getBestProvider(criteria, true);
+		//provider = locationManager.GPS_PROVIDER;
+		//TODO:
+		
+		//locationManager.requestLocationUpdates(provider, 5000, 2, listener);  
+
+		// Get current location
+		myLocation = locationManager.getLastKnownLocation(provider);
+			
+		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+		
+		double latitude = myLocation.getLatitude();
+		double longitude = myLocation.getLongitude();
+		
+		currentLocation = new LatLng(latitude, longitude);
+		
+		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLocation, 16);
+		map.animateCamera(update);
+		
+		map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(AddressName));
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            showDialog(connectionResult.getErrorCode());
+        }
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(this, "GPS Disconnected", Toast.LENGTH_LONG);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.map, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	public static class ErrorDialogFragment extends DialogFragment {
+        // Global field to contain the error dialog
+        private Dialog mDialog;
+        // Default constructor. Sets the dialog field to null
+        public ErrorDialogFragment() {
+            super();
+            mDialog = null;
+        }
+        // Set the dialog to display
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+        // Return a Dialog to the DialogFragment.
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
+    }
+
+	@Override
+	public void onMyLocationChange(Location location) {
+		currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+		if(!isLocationFound){
+			getAddress(location);
+
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
+			map.addMarker(new MarkerOptions().position(currentLocation).title(AddressName));
+			isLocationFound = true;
+		}
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+		if(!isLocationFound){
+			getAddress(location);
+
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
+			map.addMarker(new MarkerOptions().position(currentLocation).title(AddressName));
+			isLocationFound = true;
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		map.clear();
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
+		map.addMarker(new MarkerOptions().position(currentLocation).title(AddressName));
+	}
+	
+	public void getAddress(Location location) {
+		map.clear();
+		
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
+            try {
+				AddressName = (new GetAddressTask(this)).execute(location).get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+	}
+}
