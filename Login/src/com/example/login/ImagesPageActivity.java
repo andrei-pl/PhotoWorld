@@ -56,6 +56,7 @@ public class ImagesPageActivity extends FragmentActivity {
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
 		
 		navMenuIcons.recycle();
 		
@@ -139,9 +140,12 @@ public class ImagesPageActivity extends FragmentActivity {
 
 			break;
 		case 3:
-			fragment = new MapFragment();
+			fragment = new TakePictureFragment();
 			break;
 		case 4:
+			fragment = new MapFragment();
+			break;
+		case 5:
 			
 			break;
 
