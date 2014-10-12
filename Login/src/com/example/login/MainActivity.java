@@ -1,5 +1,7 @@
 package com.example.login;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;

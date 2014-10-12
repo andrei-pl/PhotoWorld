@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import com.example.adapter.NavDrawerListAdapter;
 import com.example.models.NavDrawerItem;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-public class ImagesPageActivity extends Activity {
+public class ImagesPageActivity extends FragmentActivity {
 	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
