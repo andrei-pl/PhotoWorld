@@ -45,7 +45,7 @@ public class ImagesPageActivity extends FragmentActivity {
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
 	private Context context;
-	private ListView photoList;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class ImagesPageActivity extends FragmentActivity {
 		this.setContentView(R.layout.nav_drawer_activity);
 		
 		this.context = this;
-        this.photoList = (ListView) findViewById(R.id.listPhotos);
+        
         
 		navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 		
@@ -150,11 +150,11 @@ public class ImagesPageActivity extends FragmentActivity {
 			break;
 		case 1:
 			fragment = new LoadPicturesFragment();
-			LoadPhotos();
+//			LoadPhotos();
 			break;
 		case 2:
 			fragment = new LoadPicturesFragment();
-			LoadPhotos();
+//			LoadPhotos();
 			break;
 		case 3:
 			fragment = new TakePictureFragment();
@@ -186,33 +186,7 @@ public class ImagesPageActivity extends FragmentActivity {
 		}
 	}
 	
-	private void LoadPhotos() {
-		try {
-			ArrayList<ImageInfo> result = (new GetAsyncResult()).execute().get();
-			ImageAdapter adapter = new ImageAdapter(context, R.layout.single_photo);
-			
-			int i = 0;
-			for (ImageInfo imageInfo : result) {
-				
-				byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
-				Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-				
-				adapter.add(decodedBytes);
-	            
-				i++;
-			}
-			
-			photoList.setAdapter(adapter);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("Bad", "Load photos Interupted exception");
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("Bad", "Load Photos Execution exception");
-		}
-	}
+	
 
 	@Override
 	public void setTitle(CharSequence title) {

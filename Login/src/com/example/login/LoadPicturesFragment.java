@@ -1,18 +1,63 @@
 package com.example.login;
 
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
+import com.example.images.GetAsyncResult;
+import com.example.images.ImageAdapter;
+import com.example.images.ImageInfo;
+
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 public class LoadPicturesFragment extends Fragment {
+	
+	private ListView photoList;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
 		View rootView = inflater.inflate(R.layout.fragment_images, container, false);
 		
+		photoList = (ListView)rootView.findViewById(R.id.listPhotos);
+		LoadPhotos();
+		
 		return rootView;
+	}
+	
+	private void LoadPhotos() {
+		try {
+			ArrayList<ImageInfo> result = (new GetAsyncResult()).execute().get();
+			ImageAdapter adapter = new ImageAdapter(getActivity(), R.layout.single_photo);
+			
+			int i = 0;
+			for (ImageInfo imageInfo : result) {
+				
+				byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
+				Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+				
+				adapter.add(decodedBytes);
+	            
+				i++;
+			}
+			
+			photoList.setAdapter(adapter);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("Bad", "Load photos Interupted exception");
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("Bad", "Load Photos Execution exception");
+		}
 	}
 }
