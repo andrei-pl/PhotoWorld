@@ -1,0 +1,287 @@
+package com.example.login;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.example.images.GetAsyncResult;
+import com.example.images.Image;
+import com.example.images.ImageAdapter;
+import com.example.images.ImageHelper;
+import com.example.images.ImageInfo;
+import com.example.images.MyLocation;
+import com.google.gson.Gson;
+import com.telerik.everlive.sdk.core.EverliveApp;
+import com.telerik.everlive.sdk.core.result.RequestResult;
+
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.location.Location;
+import android.os.Bundle;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class ImagesPageActivity extends Activity implements OnClickListener {
+
+	private static final int CAMERA_REQUEST = 100; 
+	private Context context;
+	private GridView photoList;
+	protected Button save_photo, load_my_photos, load_all_photos;
+    private ImageView imageView; 
+
+    private EverliveApp everlive;
+    
+    //String DB_NAME = Environment.getExternalStorageDirectory() + "/PicturesInfo2.db";
+    String TABLE_NAME = "ImagesInfo";
+    ImageHelper help;
+	ImageAdapter adapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.images_layout);
+        
+        this.everlive = new EverliveApp("gIMQgGG9sI53ZQjD");
+        //this.everlive.workWith().authentication().login("asd", "asd").executeSync();
+        
+        this.help = new ImageHelper(this);
+        this.context = this;
+        this.photoList = (GridView) this.findViewById(R.id.listPhotos);
+        imageView = new ImageView(context);
+        
+        save_photo = (Button) this.findViewById(R.id.btnCapturePhoto);
+        save_photo.setOnClickListener(this);
+
+        load_my_photos = (Button) this.findViewById(R.id.btnLoadMyPhotos);
+        load_my_photos.setOnClickListener(this);
+
+        load_all_photos = (Button) this.findViewById(R.id.btnLoadAllPhotos);
+        load_all_photos.setOnClickListener(this);
+    }
+ 
+    public void onClick(View v) {
+ 
+        int id = v.getId();
+        switch (id) {
+ 
+       case R.id.btnLoadMyPhotos:
+//            Intent intent = new Intent();
+//            intent.setType("image/*");
+//            intent.setAction(Intent.ACTION_GET_CONTENT);
+            //startActivityForResult(Intent.createChooser(intent, "Select Picture"), CAMERA_REQUEST);
+            break;
+            
+       case R.id.btnLoadAllPhotos:
+           loadPhotos();
+           break;
+       
+       case R.id.btnCapturePhoto:
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
+            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            break;
+            
+       default:
+            break;
+        }
+    }
+ 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if (resultCode == RESULT_OK) {  
+    		if (requestCode == CAMERA_REQUEST) {
+    			// TODO: Set real values for location and etc.
+    			
+    			Bitmap photo = (Bitmap) data.getExtras().get("data");   
+
+	            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+	            byte[] byteArray = stream.toByteArray();  		
+	
+	            String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+	            String uri = Double.toHexString(Math.random()).substring(4, 15) + ".jpg"; // Given it random name
+				Image image = new Image();
+				image.Filename = uri;
+				image.ContentType = "image/jpeg";
+				image.base64 = encodedImage;
+	            
+	            MyLocation location = new MyLocation(43, 23);
+	            
+	            ImageInfo imageInfo = new ImageInfo();
+	            imageInfo.Picture  = image;
+	            imageInfo.setLocation(location);
+	            imageInfo.Address = "Aleksandar Malinov 30";
+	            imageInfo.setPublic(true);
+	            imageInfo.setOwner(new UUID(1, 1));
+	            imageInfo.setPublicationDate(new Date());
+	            
+	            Gson gson = new Gson();
+	            String json = gson.toJson(imageInfo);
+	            everlive.workWith().data(ImageInfo.class).create(imageInfo).executeAsync();
+	    	}															
+	    }
+	}
+    
+    void loadPhotos() {
+    	// Trying multiple ways to read from everlive, unfortunately without success
+        
+//		BufferedReader in = null;
+//	    String result = null;
+//
+//		URI url;
+//		try {
+//			HttpClient httpclient = new DefaultHttpClient();
+//			url = new URI("http://api.everlive.com/v1/gIMQgGG9sI53ZQjD/ImagesInfo");
+//			HttpGet getResult = new HttpGet(url);
+//
+//			HttpResponse response = httpclient.execute(getResult);
+//	            in = new BufferedReader(new InputStreamReader(
+//                   response.getEntity().getContent()));
+//	            Log.e("Success", "Success");
+//			String line = in.readLine();
+//	            Log.e("Result", line);
+//		} catch (URISyntaxException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClientProtocolException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        RequestResult<ArrayList<ImageInfo>> readFromEverlive = everlive.workWith().data(ImageInfo.class).getAll().executeSync();
+//        if (readFromEverlive.getSuccess()) {
+//            ArrayList<ImageInfo> books = (ArrayList) readFromEverlive.getValue();
+//            for (ImageInfo book : books) {
+//                Log.e("Success", "Success");
+//            }
+//        } else {
+//            Log.e("Bad", "Very bad");
+//        }
+    	try {
+			ArrayList<ImageInfo> result = (new GetAsyncResult()).execute().get();
+			Bitmap[] pics = new Bitmap[result.size()];
+			int i = 0;
+			ImageAdapter adapter = new ImageAdapter(context, R.layout.single_list);
+			
+			for (ImageInfo imageInfo : result) {
+				
+//				YuvImage yuvimage = new YuvImage(imageInfo.Picture.base64.getBytes(),ImageFormat.YUY2, 120, 30, null);
+//		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//		        yuvimage.compressToJpeg(new Rect(0, 0, 20, 20), 100, baos);
+//		        byte[] jdata = baos.toByteArray();
+//		        Bitmap decodedBytes = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
+//				pics[i] = decodedBytes;
+				
+				byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
+				Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+				//pics[i] = decodedBytes;
+				
+				adapter.add(decodedBytes);
+	            
+				i++;				
+				Log.e("","");
+			}
+			
+			photoList.setAdapter(adapter);
+            
+			//Log.e("Success", "Success");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("Bad", "Load photos Interupted exception");
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("Bad", "Load Photos Execution exception");
+		}
+    	
+//    	Cursor c= help.getAll();
+//        if(c.getCount()>0)
+//        {  
+//        	Bitmap[]  array=new Bitmap[c.getCount()];
+//            byte[][] bytes = new byte[array.length][];
+//            
+//            int i = 0;            
+//            c.moveToFirst();
+//            while(c.isAfterLast()==false)
+//            {
+//            	byte[] pic = c.getBlob(c.getColumnIndex("image"));
+//            	bytes[i] = pic;
+//            	adapter = new ImageAdapter(context, R.layout.single_list, new byte[][]{pic});
+//            	//imageView = (ImageView) adapter.getView(i, null, null);
+//                c.moveToNext();   
+//                i++;
+//            }
+//            
+//            //byte[] bytesDecoded = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//
+//        	ArrayAdapter<byte[]> adapter = new ArrayAdapter<byte[]>(context, android.R.layout.simple_list_item_1, bytes);
+//            photoList.setAdapter(adapter);
+//            c.close();
+//            help.close();
+//            Log.e("Bitmap length",""+array.length);
+//        }
+//        
+//        Toast.makeText(this.getBaseContext(),
+//                "Image read from DB successfully.", Toast.LENGTH_SHORT).show();
+    }
+// 
+//    void setImage(byte[] bytes) {
+//    	
+//        //list.addView(adapter, 0, setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)));
+//    }
+//
+//	private LayoutParams setImageBitmap(Bitmap decodeByteArray) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+	// TODO: Load and save images by username in everlive
+	// Save by UserName: Picture (File), Location (Geopoint), Address (string), Public (Yes/No)
+}

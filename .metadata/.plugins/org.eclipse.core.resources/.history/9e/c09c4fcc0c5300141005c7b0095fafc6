@@ -1,0 +1,147 @@
+package com.example.images;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity implements OnClickListener {
+	private static final int CAMERA_REQUEST = 100;
+	private Context context;
+	private ListView photoList;
+	protected Button save_image, read_image;
+	private ImageView imageView;
+
+	String DB_NAME = Environment.getExternalStorageDirectory()
+			+ "/PicturesInfo2.db";
+	String TABLE_NAME = "Image";
+	ImageHelper help;
+	ImageAdapter adapter;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// setContentView(R.layout.activity_main);
+		this.help = new ImageHelper(this);
+		this.context = this;
+		// this.photoList = (ListView) this.findViewById(R.id.photoList);
+		imageView = new ImageView(context);
+
+		// save_image = (Button) findViewById(R.id.save_image);
+		save_image.setOnClickListener(this);
+
+		// read_image = (Button) findViewById(R.id.read_image);
+		read_image.setOnClickListener(this);
+
+	}
+
+	public void onClick(View v) {
+
+		int id = v.getId();
+		switch (id) {
+
+		// case R.id.get_image:
+		// Intent intent = new Intent();
+		// intent.setType("image/*");
+		// intent.setAction(Intent.ACTION_GET_CONTENT);
+		// startActivityForResult(
+		// Intent.createChooser(intent, "Select Picture"),
+		// SELECT_PICTURE);
+		// break;
+
+		// case R.id.save_image:
+		// Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		// startActivityForResult(cameraIntent, CAMERA_REQUEST);
+		//
+		// break;
+		//
+		// case R.id.read_image:
+		// readFromDB();
+		// break;
+		default:
+			break;
+
+		}
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK) {
+			if (requestCode == CAMERA_REQUEST) {
+				Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+				byte[] byteArray = stream.toByteArray();
+
+				help.insert(byteArray);
+
+				help.close();
+			}
+		}
+	}
+
+	void readFromDB() {
+		Cursor c = help.getAll();
+		if (c.getCount() > 0) {
+			Bitmap[] array = new Bitmap[c.getCount()];
+			byte[][] bytes = new byte[array.length][];
+
+			int i = 0;
+			c.moveToFirst();
+			while (c.isAfterLast() == false) {
+				byte[] pic = c.getBlob(c.getColumnIndex("image"));
+				bytes[i] = pic;
+				// adapter = new ImageAdapter(context, R.layout.single_list, new
+				// byte[][]{pic});
+				// imageView = (ImageView) adapter.getView(i, null, null);
+				c.moveToNext();
+				i++;
+			}
+
+			// byte[] bytesDecoded = BitmapFactory.decodeByteArray(bytes, 0,
+			// bytes.length);
+
+			ArrayAdapter<byte[]> adapter = new ArrayAdapter<byte[]>(context,
+					android.R.layout.simple_list_item_1, bytes);
+			photoList.setAdapter(adapter);
+			c.close();
+			help.close();
+			Log.e("Bitmap length", "" + array.length);
+		}
+
+		Toast.makeText(this.getBaseContext(),
+				"Image read from DB successfully.", Toast.LENGTH_SHORT).show();
+	}
+
+	void setImage(byte[] bytes) {
+
+		// list.addView(adapter, 0,
+		// setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0,
+		// bytes.length)));
+	}
+
+	private LayoutParams setImageBitmap(Bitmap decodeByteArray) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

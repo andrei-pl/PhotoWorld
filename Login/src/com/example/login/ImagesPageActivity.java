@@ -1,23 +1,33 @@
 package com.example.login;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import com.example.adapter.NavDrawerListAdapter;
+import com.example.images.GetAsyncResult;
+import com.example.images.ImageAdapter;
+import com.example.images.ImageInfo;
 import com.example.models.NavDrawerItem;
+import com.telerik.everlive.sdk.core.EverliveApp;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 
 public class ImagesPageActivity extends FragmentActivity {
@@ -34,7 +44,9 @@ public class ImagesPageActivity extends FragmentActivity {
 	
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
-
+	private Context context;
+	private ListView photoList;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -42,6 +54,9 @@ public class ImagesPageActivity extends FragmentActivity {
 		
 		this.setContentView(R.layout.nav_drawer_activity);
 		
+		this.context = this;
+        this.photoList = (ListView) findViewById(R.id.listPhotos);
+        
 		navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 		
 		navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
@@ -134,10 +149,12 @@ public class ImagesPageActivity extends FragmentActivity {
 			fragment = new HomeFragment();
 			break;
 		case 1:
-
+			fragment = new LoadPicturesFragment();
+			LoadPhotos();
 			break;
 		case 2:
-
+			fragment = new LoadPicturesFragment();
+			LoadPhotos();
 			break;
 		case 3:
 			fragment = new TakePictureFragment();
@@ -169,6 +186,34 @@ public class ImagesPageActivity extends FragmentActivity {
 		}
 	}
 	
+	private void LoadPhotos() {
+		try {
+			ArrayList<ImageInfo> result = (new GetAsyncResult()).execute().get();
+			ImageAdapter adapter = new ImageAdapter(context, R.layout.single_photo);
+			
+			int i = 0;
+			for (ImageInfo imageInfo : result) {
+				
+				byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
+				Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+				
+				adapter.add(decodedBytes);
+	            
+				i++;
+			}
+			
+			photoList.setAdapter(adapter);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("Bad", "Load photos Interupted exception");
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("Bad", "Load Photos Execution exception");
+		}
+	}
+
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title;

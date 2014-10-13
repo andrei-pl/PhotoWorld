@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 		
 		mManager = new UserManager(this.getApplicationContext());
 		if(mManager.isLogged()) {
-			Toast.makeText(this, "I know you man !", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show();
 			startActivity(imagesScreen);
 		}
 		editUser = (EditText) findViewById(R.id.txtLogUser);
