@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 import android.location.Location;
 
+import com.example.location.MyLocation;
 import com.telerik.everlive.sdk.core.model.base.DataItem;
 import com.telerik.everlive.sdk.core.serialization.ServerProperty;
 import com.telerik.everlive.sdk.core.serialization.ServerType;

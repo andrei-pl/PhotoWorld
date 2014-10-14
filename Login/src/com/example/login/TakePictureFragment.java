@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import com.example.images.Image;
 import com.example.images.ImageInfo;
-import com.example.images.MyLocation;
+import com.example.location.MyLocation;
 import com.telerik.everlive.sdk.core.EverliveApp;
 
 import android.app.Activity;

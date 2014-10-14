@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
-import com.example.images.GetAsyncResult;
+import com.example.asynctasks.GetAsyncResult;
 import com.example.images.ImageAdapter;
 import com.example.images.ImageInfo;
 

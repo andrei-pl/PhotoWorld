@@ -1,7 +1,6 @@
 INDEX VERSION 1.127+C:\Users\Andrey\Documents\GitHub\PhotoWorld\.metadata\.plugins\org.eclipse.jdt.core
 1516772135.index
 1880370250.index
-1734703654.index
 3569909186.index
 1070011249.index
 2208971587.index

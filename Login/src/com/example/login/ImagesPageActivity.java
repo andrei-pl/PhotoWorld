@@ -4,19 +4,26 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import com.example.adapter.NavDrawerListAdapter;
-import com.example.images.GetAsyncResult;
+import com.example.asynctasks.GetAsyncResult;
 import com.example.images.ImageAdapter;
 import com.example.images.ImageInfo;
 import com.example.models.NavDrawerItem;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.telerik.everlive.sdk.core.EverliveApp;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.IntentSender;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
@@ -29,9 +36,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-public class ImagesPageActivity extends FragmentActivity {
+public class ImagesPageActivity extends FragmentActivity implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener{
 	
+	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -44,18 +53,14 @@ public class ImagesPageActivity extends FragmentActivity {
 	
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
-	private Context context;
-
+	private LocationClient mLocationClient;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		this.setContentView(R.layout.nav_drawer_activity);
-		
-		this.context = this;
-        
+		this.setContentView(R.layout.nav_drawer_activity);        
         
 		navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 		
@@ -103,6 +108,8 @@ public class ImagesPageActivity extends FragmentActivity {
 		if(savedInstanceState == null){
 			displayView(0);
 		}
+		
+		mLocationClient = new LocationClient(this, this, this);
 	}
 	
 	@Override
@@ -160,7 +167,7 @@ public class ImagesPageActivity extends FragmentActivity {
 			fragment = new TakePictureFragment();
 			break;
 		case 4:
-			fragment = new MapFragment();
+			fragment = MapFragment.Instace(mLocationClient);
 			break;
 		case 5:
 			
@@ -207,4 +214,45 @@ public class ImagesPageActivity extends FragmentActivity {
 	}
 	// TODO: Load and save images by username in everlive
 	// Save by UserName: Picture (File), Location (Geopoint), Address (string), Public (Yes/No)
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		if (connectionResult.hasResolution()) {
+			try {
+				// Start an Activity that tries to resolve the error
+				connectionResult.startResolutionForResult(this,
+						CONNECTION_FAILURE_RESOLUTION_REQUEST);
+				/*
+				 * Thrown if Google Play services canceled the original
+				 * PendingIntent
+				 */
+			} catch (IntentSender.SendIntentException e) {
+				// Log the error
+				e.printStackTrace();
+			}
+		} else {
+			/*
+			 * If no resolution is available, display a dialog to the user with
+			 * the error.
+			 */
+			showDialog(connectionResult.getErrorCode());
+		}
+	}
+
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
+	}
+
+	@Override
+	public void onLocationChanged(Location arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

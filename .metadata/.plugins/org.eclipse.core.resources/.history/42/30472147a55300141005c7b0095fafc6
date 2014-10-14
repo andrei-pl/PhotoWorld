@@ -1,0 +1,7 @@
+package com.example.asynctasks;
+
+import android.os.AsyncTask;
+
+public class GetAddressTask extends AsyncTask<Location, Void, String> {
+
+}
