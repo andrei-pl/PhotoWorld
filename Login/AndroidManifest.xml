@@ -7,11 +7,12 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
-    
-    <permission android:name="com.example.login.permission.MAPS_RECEIVE" 
-		android:protectionLevel="signature"/>
-    
-    <uses-permission android:name="com.example.login.permission.MAPS_RECEIVE" />  
+
+    <permission
+        android:name="com.example.login.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.example.login.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
@@ -19,7 +20,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-  	<uses-feature android:name="android.hardware.camera" />
+
+    <uses-feature android:name="android.hardware.camera" />
 
     <!-- Required OpenGL ES 2.0. for Maps V2 -->
     <uses-feature
@@ -40,16 +42,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="RegisterActivity"></activity>
-        <activity android:name="ImagesPageActivity"></activity>
+        <activity android:name="RegisterActivity" >
+        </activity>
+        <activity android:name="ImagesPageActivity" >
+        </activity>
         
+        <!-- android:value="AIzaSyDqBbD1aJ3QBWo-0d1AG81j4_ZVWGD5eE" -->
         <meta-data
-		    android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="AIzaSyDqBbD1aJ3QBWo--0d1AG81j4_ZVWGD5eE" />
-     
-     	<meta-data
-			android:name="com.google.android.gms.version"
-			android:value="@integer/google_play_services_version" />
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAFhv1DCBIE6G3eMldya7Xv1OGNuF0GCnw" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

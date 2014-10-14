@@ -42,6 +42,7 @@ public class TakePictureFragment extends Fragment{
 	private Intent data;
 
     private EverliveApp everlive;
+	private String currentFileName;
     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,8 +78,9 @@ public class TakePictureFragment extends Fragment{
 		}
 		
 		String timeStamp = new SimpleDateFormat("yyyMMdd_HHmmss", Locale.UK).format(new Date());
-		return new File(directory.getPath() + File.separator + "IMG_"  
-                    + timeStamp + ".jpg");
+		currentFileName = "IMG_" + timeStamp + ".jpg";
+		
+		return new File(directory.getPath() + File.separator + currentFileName);
 	}
 	
 	@Override
@@ -110,7 +112,7 @@ public class TakePictureFragment extends Fragment{
 	  }       
 	}
 	
-	public class CancelButton implements OnClickListener{
+	private class CancelButton implements OnClickListener{
 
 		@Override
 		public void onClick(View v) {
@@ -127,7 +129,7 @@ public class TakePictureFragment extends Fragment{
 		}
 	}
 	
-	public class ConfirmButton implements OnClickListener{
+	private class ConfirmButton implements OnClickListener{
 
 		@Override
 		public void onClick(View v) {
@@ -138,9 +140,8 @@ public class TakePictureFragment extends Fragment{
             byte[] byteArray = stream.toByteArray();  		
 
             String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            String uri = Double.toHexString(Math.random()).substring(4, 15) + ".jpg"; // Given it random name
-			Image image = new Image();
-			image.Filename = uri;
+            Image image = new Image();
+			image.Filename = currentFileName;
 			image.ContentType = "image/jpeg";
 			image.base64 = encodedImage;
             
@@ -157,6 +158,11 @@ public class TakePictureFragment extends Fragment{
 //            Gson gson = new Gson();
 //            String json = gson.toJson(imageInfo);
             everlive.workWith().data(ImageInfo.class).create(imageInfo).executeAsync();
+            
+            FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
+            fragTransaction.replace(R.id.frame_container, new HomeFragment() );
+            fragTransaction.addToBackStack(null);
+            fragTransaction.commit();
 		}
 	}
 }

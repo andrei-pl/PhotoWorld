@@ -8,7 +8,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import android.app.Fragment;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,23 +27,32 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.apache.http.util.EntityUtils;
 
+import com.example.login.ImagesPageActivity;
+import com.example.login.LoadPicturesFragment;
+import com.example.login.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.telerik.everlive.sdk.core.EverliveApp;
 import com.telerik.everlive.sdk.core.result.RequestResult;
 
 import android.R.integer;
+import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.ListView;
 
 public class GetAsyncResult extends AsyncTask<Void, Void, ArrayList<ImageInfo>> {
 
-	EverliveApp everlive = new EverliveApp("gIMQgGG9sI53ZQjD");
-
+	//EverliveApp everlive = new EverliveApp("gIMQgGG9sI53ZQjD");
+	private ArrayList<ImageInfo> images;
+	
 	@Override
 	protected ArrayList<ImageInfo> doInBackground(Void... params) {
 
-		ArrayList<ImageInfo> images = new ArrayList<ImageInfo>();
+		images = new ArrayList<ImageInfo>();
 		BufferedReader in = null;
 		JSONArray result = null;
 		HttpClient httpclient = new DefaultHttpClient();
@@ -111,6 +123,7 @@ public class GetAsyncResult extends AsyncTask<Void, Void, ArrayList<ImageInfo>> 
 
 				images.add(imageInfo);
 			}
+			
 			// Log.e("Result", "OK");
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
@@ -127,6 +140,30 @@ public class GetAsyncResult extends AsyncTask<Void, Void, ArrayList<ImageInfo>> 
 		}
 
 		return images;
+	}
+
+	@Override
+	protected void onPostExecute(ArrayList<ImageInfo> result) {
+//		Fragment fragment = new LoadPicturesFragment();
+//		
+//		Collections.reverse(images);
+//		
+//		ListView photoList = LoadPicturesFragment.photoList;
+//		
+//		ImageAdapter adapter = new ImageAdapter(ImagesPageActivity.getCallingActivity(), R.layout.single_photo);
+//		
+//		int i = 0;
+//		for (ImageInfo imageInfo : result) {
+//			
+//			byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
+//			Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//			
+//			adapter.add(decodedBytes);
+//            
+//			i++;
+//		}
+//		
+//		photoList.setAdapter(adapter);
 	}
 
 }

@@ -1,0 +1,4 @@
+<ImageView
+    android:id="@+id/photo"
+    android:layout_width="fill_parent"
+    android:layout_height="300dp" />
