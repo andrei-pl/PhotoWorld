@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import com.example.adapter.NavDrawerListAdapter;
-import com.example.asynctasks.GetAsyncResult;
 import com.example.images.ImageAdapter;
 import com.example.images.ImageInfo;
 import com.example.models.NavDrawerItem;

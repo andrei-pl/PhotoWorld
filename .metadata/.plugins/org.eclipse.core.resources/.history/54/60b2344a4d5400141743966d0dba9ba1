@@ -1,0 +1,51 @@
+package com.example.asynctasks;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import android.app.Fragment;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.apache.http.util.EntityUtils;
+
+import com.example.images.Image;
+import com.example.images.ImageAdapter;
+import com.example.images.ImageInfo;
+import com.example.location.MyLocation;
+import com.example.login.ImagesPageActivity;
+import com.example.login.LoadPicturesFragment;
+import com.example.login.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.telerik.everlive.sdk.core.EverliveApp;
+import com.telerik.everlive.sdk.core.result.RequestResult;
+
+import android.R.integer;
+import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
+import android.util.Log;
+import android.widget.ListView;
+
