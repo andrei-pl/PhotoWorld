@@ -1,43 +1,31 @@
 package com.example.login;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import com.example.adapter.NavDrawerListAdapter;
-import com.example.images.ImageAdapter;
-import com.example.images.ImageInfo;
-import com.example.models.NavDrawerItem;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
-import com.telerik.everlive.sdk.core.EverliveApp;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.IntentSender;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ImagesPageActivity extends FragmentActivity implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener{
+import com.example.adapter.NavDrawerListAdapter;
+import com.example.location.MyLocationListener;
+import com.example.models.NavDrawerItem;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+
+public class ImagesPageActivity extends FragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener{
 	
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private DrawerLayout mDrawerLayout;
@@ -52,7 +40,7 @@ public class ImagesPageActivity extends FragmentActivity implements LocationList
 	
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
-	private LocationClient mLocationClient;
+	private MyLocationListener mLocationClient;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +96,7 @@ public class ImagesPageActivity extends FragmentActivity implements LocationList
 			displayView(0);
 		}
 		
-		mLocationClient = new LocationClient(this, this, this);
+		mLocationClient = MyLocationListener.Instance(this, this, this);
 	}
 	
 	@Override
@@ -163,7 +151,7 @@ public class ImagesPageActivity extends FragmentActivity implements LocationList
 //			LoadPhotos();
 			break;
 		case 3:
-			fragment = new TakePictureFragment();
+			fragment = new TakePictureFragment(mLocationClient);
 			break;
 		case 4:
 			fragment = MapFragment.Instace(mLocationClient);
@@ -238,7 +226,6 @@ public class ImagesPageActivity extends FragmentActivity implements LocationList
 		}
 	}
 
-
 	@Override
 	public void onConnected(Bundle arg0) {
 		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
@@ -249,9 +236,4 @@ public class ImagesPageActivity extends FragmentActivity implements LocationList
 		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
 	}
 
-	@Override
-	public void onLocationChanged(Location arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 }

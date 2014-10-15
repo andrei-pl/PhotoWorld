@@ -33,7 +33,7 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.os.Bundle;
 
-public class MapActivity extends Activity implements LocationListener, OnMyLocationChangeListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class MapActivity extends Activity implements OnMyLocationChangeListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private static LatLng currentLocation;
 	private GoogleMap map;
@@ -179,18 +179,6 @@ public class MapActivity extends Activity implements LocationListener, OnMyLocat
 
 	@Override
 	public void onMyLocationChange(Location location) {
-		currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-		if(!isLocationFound){
-			getAddress(location);
-
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
-			map.addMarker(new MarkerOptions().position(currentLocation).title(AddressName));
-			isLocationFound = true;
-		}
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
 		currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 		if(!isLocationFound){
 			getAddress(location);

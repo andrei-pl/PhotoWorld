@@ -10,3 +10,9 @@
 1413365868302	Delete element
 1413366496671	Rename field 'addressName'
 1413373627084	Rename field 'currentMarker'
+1413381718118	Rename local variable 'e'
+1413384575363	Encapsulate field 'currentAddress'
+1413385412620	Delete element
+1413385858475	Encapsulate field 'myLocation'
+1413386442516	Rename local variable 'myLocation'
+1413386454810	Rename local variable 'location'

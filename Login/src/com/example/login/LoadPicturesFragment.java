@@ -113,8 +113,8 @@ public class LoadPicturesFragment extends Fragment {
 					JSONObject location = jsonObject.getJSONObject("Location");
 					String latitude = location.get("latitude").toString();
 					String longitude = location.get("longitude").toString();
-					int intLat = Integer.parseInt(latitude);
-					int intLng = Integer.parseInt(longitude);
+					double intLat = Double.parseDouble(latitude);
+					double intLng = Double.parseDouble(longitude);
 
 					myLocation = new MyLocation(intLat, intLng);
 

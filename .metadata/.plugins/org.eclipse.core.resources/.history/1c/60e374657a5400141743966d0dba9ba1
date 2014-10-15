@@ -1,0 +1,53 @@
+package com.example.location;
+
+import com.example.login.ImagesPageActivity;
+import com.example.login.MapFragment;
+import com.google.android.gms.location.LocationClient;
+
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
+
+public final class MyLocationListener extends LocationClient implements LocationListener {
+
+	private Context context;
+	private ConnectionCallbacks connectionCallbacks;
+	private OnConnectionFailedListener connectionFailedListener;
+	public static Location myLocation;
+	
+	public MyLocationListener(Context context,
+			ConnectionCallbacks connectionCallbacks,
+			OnConnectionFailedListener connectionFailedListener) {
+		super(context, connectionCallbacks, connectionFailedListener);
+
+		this.context = context;
+		this.connectionCallbacks = connectionCallbacks;
+		this.connectionFailedListener = connectionFailedListener;
+	}
+
+
+	@Override
+	public void onLocationChanged(Location location) {
+		myLocation = location;
+		MapFragment.changeCurrentLocation(location);
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

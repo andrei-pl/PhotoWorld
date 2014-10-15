@@ -1,0 +1,48 @@
+package com.example.location;
+
+import com.example.login.ImagesPageActivity;
+
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
+
+public final class MyLocationListener implements LocationListener {
+
+	private ImagesPageActivity activity1;
+	private ImagesPageActivity activity2;
+	private ImagesPageActivity activity3;
+	
+	
+	public MyLocationListener(ImagesPageActivity activity1,
+			ImagesPageActivity activity2,
+			ImagesPageActivity activity3) {
+		this.activity1 = activity1;
+		this.activity2 = activity2;
+		this.activity3 = activity3;
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
