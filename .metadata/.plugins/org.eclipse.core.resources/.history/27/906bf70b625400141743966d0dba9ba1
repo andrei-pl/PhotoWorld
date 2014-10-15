@@ -1,0 +1,316 @@
+package com.example.login;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+
+import com.example.location.MyLocationListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+import android.content.Context;
+import android.content.IntentSender;
+import android.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+public class MapFragment extends Fragment implements LocationListener,
+		OnMyLocationChangeListener {
+
+	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+	private static LatLng currentLocation;
+	private GoogleMap map;
+	private LocationClient mLocationClient;
+	private boolean isLocationFound;
+	private Location myLocation;
+	private String AddressName;
+	private FragmentActivity activity;
+	private View view;
+	private static Fragment fragment;
+	private Marker currentPositionMarker;
+
+	private MapFragment(LocationClient locationClient) {
+		this.mLocationClient = locationClient;
+	}
+
+	public static Fragment Instace(LocationClient locationClient) {
+		if (fragment == null) {
+			fragment = new MapFragment(locationClient);
+		}
+
+		return fragment;
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		if (view == null) {
+			view = inflater.inflate(R.layout.fragment_map, container, false);
+
+			this.activity = (FragmentActivity) getActivity();
+
+			isLocationFound = false;
+			AddressName = "";
+
+			if (map == null) {
+				map = ((SupportMapFragment) activity
+						.getSupportFragmentManager().findFragmentById(R.id.map))
+						.getMap();
+			}
+
+			if (map != null) {
+				setUpMap();
+			}
+
+			// onResume();
+		}
+		return view;
+	}
+
+	private void createView(LayoutInflater inflater, ViewGroup container){
+		view = inflater.inflate(R.layout.fragment_map, container, false);
+
+		this.activity = (FragmentActivity) getActivity();
+
+		isLocationFound = false;
+		AddressName = "";
+
+		if (map == null) {
+			map = ((SupportMapFragment) activity
+					.getSupportFragmentManager().findFragmentById(R.id.map))
+					.getMap();
+		}
+
+		if (map != null) {
+			setUpMap();
+		}
+	}
+	
+	private void setUpMap() {
+		// Enable finding location
+		map.setMyLocationEnabled(true);
+		map.setOnMyLocationChangeListener(this);
+
+		// Create a criteria object to retrieve provider
+		Criteria criteria = new Criteria();
+
+		// LocationListener listener = new LocationListener(){
+		//
+		// @Override
+		// public void onLocationChanged(Location arg0) {
+		// // TODO Auto-generated method stub
+		//
+		// }};
+		// Get location manager object from System service LOCATION_SERVICE
+		LocationManager locationManager = (LocationManager) activity
+				.getSystemService(activity.LOCATION_SERVICE);
+
+		// Get the name of the best provider
+		String provider = locationManager.getBestProvider(criteria, true);
+		// provider = locationManager.GPS_PROVIDER;
+		// MyLocationListener loc = new MyLocationListener();
+		// locationManager.requestLocationUpdates(provider, 5000, 5, loc);
+
+		// Get current location
+		myLocation = locationManager.getLastKnownLocation(provider);
+
+		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+		double latitude = myLocation.getLatitude();
+		double longitude = myLocation.getLongitude();
+
+		currentLocation = new LatLng(latitude, longitude);
+
+		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
+				currentLocation, 16);
+		map.animateCamera(update);
+
+		map.addMarker(new MarkerOptions().position(
+				new LatLng(latitude, longitude)).title(AddressName));
+	}
+
+	public void getAddress(Location location) {
+		//map.clear();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
+				&& Geocoder.isPresent()) {
+			(new GetAddressTask()).execute(location);
+		}
+	}
+
+	public static class ErrorDialogFragment extends DialogFragment {
+		// Global field to contain the error dialog
+		private Dialog mDialog;
+
+		// Default constructor. Sets the dialog field to null
+		public ErrorDialogFragment() {
+			super();
+			mDialog = null;
+		}
+
+		// Set the dialog to display
+		public void setDialog(Dialog dialog) {
+			mDialog = dialog;
+		}
+
+		// Return a Dialog to the DialogFragment.
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return mDialog;
+		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		mLocationClient.connect();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		map.clear();
+		
+		if(currentPositionMarker != null){
+			currentPositionMarker.remove();
+		}
+		currentPositionMarker = map.addMarker(new MarkerOptions().position(currentLocation).title(
+				AddressName));
+		
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
+	}
+
+	@Override
+	public void onStop() {
+		mLocationClient.disconnect();
+		super.onStop();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main, menu);
+	}
+
+	@Override
+	public void onMyLocationChange(Location location) {
+		currentLocation = new LatLng(location.getLatitude(),
+				location.getLongitude());
+		if (!isLocationFound) {
+			getAddress(location);
+		}
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		currentLocation = new LatLng(location.getLatitude(),
+				location.getLongitude());
+		if (!isLocationFound) {
+			getAddress(location);
+		}
+	}
+
+	public void AddMarkerPosition(LatLng latLng) {
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+		map.addMarker(new MarkerOptions().position(latLng).title(AddressName));
+		isLocationFound = true;
+	}
+
+	private class GetAddressTask extends AsyncTask<Location, Void, String> {
+		Location loc;
+
+		@Override
+		protected String doInBackground(Location... params) {
+			Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
+			String addressText = "";
+
+			// Get the current location from the input parameter list
+			loc = params[0];
+			// Create a list to contain the result address
+			List<Address> addresses = null;
+			try {
+				/*
+				 * Return 1 address.
+				 */
+				List<Address> address = geocoder.getFromLocation(
+						loc.getLatitude(), loc.getLongitude(), 1);
+				addresses = address;
+			} catch (IOException e1) {
+				Log.e("LocationSampleActivity",
+						"IO Exception in getFromLocation()");
+				e1.printStackTrace();
+				return ("IO Exception trying to get address");
+			} catch (IllegalArgumentException e2) {
+				// Error message to post in the log
+				String errorString = "Illegal arguments "
+						+ Double.toString(loc.getLatitude()) + " , "
+						+ Double.toString(loc.getLongitude())
+						+ " passed to address service";
+				Log.e("LocationSampleActivity", errorString);
+				e2.printStackTrace();
+				return errorString;
+			}
+			// If the reverse geocode returned an address
+			if (addresses != null && addresses.size() > 0) {
+				// Get the first address
+				Address address = addresses.get(0);
+				/*
+				 * Format the first line of address (if available), city, and
+				 * country name.
+				 */
+
+				if (address.getMaxAddressLineIndex() > 0) {
+					addressText = address.getAddressLine(0);
+					Log.e("Success", "Success");
+				} else {
+					addressText = String.format("%s, %s, %s", "",
+							address.getLocality(), address.getCountryName());
+				}
+
+				// Return the text
+				return addressText;
+			}
+			Log.e("Success", "No Success");
+			return "No address found";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+
+			AddressName = result;
+			AddMarkerPosition(latLng);
+
+			super.onPostExecute(result);
+		}
+	}
+}

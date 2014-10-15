@@ -56,21 +56,6 @@ public class LoadPicturesFragment extends Fragment {
 	
 	private void LoadPhotos() {
 		(new GetAsyncResult()).execute();
-//			Collections.reverse(result);
-//			ImageAdapter adapter = new ImageAdapter(getActivity(), R.layout.single_photo);
-//			
-//			int i = 0;
-//			for (ImageInfo imageInfo : result) {
-//				
-//				byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
-//				Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//				
-//				adapter.add(decodedBytes);
-//	            
-//				i++;
-//			}
-//			
-//			photoList.setAdapter(adapter);
 	}
 	
 	private class GetAsyncResult extends AsyncTask<Void, Void, ArrayList<ImageInfo>> {
