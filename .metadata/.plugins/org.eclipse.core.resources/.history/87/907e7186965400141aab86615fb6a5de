@@ -1,0 +1,179 @@
+package com.example.login;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.example.images.Image;
+import com.example.images.ImageAdapter;
+import com.example.images.ImageInfo;
+import com.example.location.MyLocation;
+
+import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
+public class LoadPicturesFragment extends Fragment {
+	
+	private ListView photoList;
+	private FragmentActivity fragment;
+
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		
+		View rootView = inflater.inflate(R.layout.fragment_images, container, false);
+		this.fragment = (FragmentActivity) getActivity();
+		
+		photoList = (ListView)rootView.findViewById(R.id.listPhotos);
+		LoadPhotos();
+		
+		return rootView;
+	}
+	
+	private void LoadPhotos() {
+		(new GetAsyncResult()).execute();
+	}
+	
+	private class GetAsyncResult extends AsyncTask<Void, Void, ArrayList<ImageInfo>> {
+
+		private final String everliveUrl = "http://api.everlive.com/v1/gIMQgGG9sI53ZQjD/ImagesInfo";
+		private ArrayList<ImageInfo> images;
+
+		@Override
+		protected ArrayList<ImageInfo> doInBackground(Void... params) {
+
+			images = new ArrayList<ImageInfo>();
+			BufferedReader in = null;
+			JSONArray result = null;
+			HttpClient httpclient = new DefaultHttpClient();
+
+			try {
+				URI url = new URI(everliveUrl);
+				HttpGet getResult = new HttpGet(url);
+
+				HttpResponse response = httpclient.execute(getResult);
+				in = new BufferedReader(new InputStreamReader(response.getEntity()
+						.getContent()));
+				// Log.e("Success", "Success");
+				String line = in.readLine();
+				StringBuilder sb = new StringBuilder();
+
+				while (line != null) {
+					sb.append(line);
+					line = in.readLine();
+				}
+
+				JSONObject jsonObj = new JSONObject(sb.toString());
+				String count = jsonObj.get("Count").toString();
+				int number = Integer.parseInt(count);
+
+				result = jsonObj.getJSONArray("Result"); // takes number of pictures
+															// in the object
+
+				// makes array of ImageInfo
+				for (int i = 0; i < number; i++) {
+					ImageInfo imageInfo = new ImageInfo();
+					Image image = new Image();
+					MyLocation myLocation;
+					boolean isPublic;
+					String address;
+					String publicationDate;
+
+					JSONObject jsonObject = result.getJSONObject(i);
+
+					address = jsonObject.get("Address").toString();
+					publicationDate = jsonObject.get("PublicationDate").toString();
+					String publicOrNot = jsonObject.get("Public").toString();
+					isPublic = (publicOrNot == "true") ? true : false;
+
+					JSONObject location = jsonObject.getJSONObject("Location");
+					String latitude = location.get("latitude").toString();
+					String longitude = location.get("longitude").toString();
+					double intLat = Double.parseDouble(latitude);
+					double intLng = Double.parseDouble(longitude);
+
+					myLocation = new MyLocation(intLat, intLng);
+
+					JSONObject imageJson = jsonObject.getJSONObject("Picture");
+					String name = imageJson.get("Filename").toString();
+					String type = imageJson.get("ContentType").toString();
+					String base64 = imageJson.get("base64").toString();
+
+					image.base64 = base64;
+					// System.out.println(base64);
+					// System.out.println(image.base64);
+					image.Filename = name;
+					image.ContentType = type;
+
+					imageInfo.Address = address;
+					imageInfo.Picture = image;
+					imageInfo.location = myLocation;
+					// imageInfo.publicationDate = new Date();
+					imageInfo.Public = isPublic;
+
+					images.add(imageInfo);
+				}
+				
+				// Log.e("Result", "OK");
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return images;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<ImageInfo> result) {
+			Collections.reverse(images);
+			ImageAdapter adapter = new ImageAdapter(fragment, R.layout.single_photo);
+			
+			int i = 0;
+			for (ImageInfo imageInfo : result) {
+				
+				byte[] decodedString = Base64.decode(imageInfo.Picture.base64, Base64.DEFAULT);
+				Bitmap decodedBytes = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+				
+				adapter.add(decodedBytes);
+	            
+				i++;
+			}
+			
+			photoList.setAdapter(adapter);
+		}
+
+	}
+}

@@ -1,0 +1,7 @@
+package com.example.login;
+
+import android.os.AsyncTask;
+
+public class GetAsyncResult extends AsyncTask<Void, Void, ArrayList<ImageInfo>> {
+
+}

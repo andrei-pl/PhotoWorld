@@ -98,6 +98,7 @@ public class MapFragment extends Fragment implements LocationListener,
 	}
 
 	private void setUpMap() {
+		(new GetAsyncResult()).execute(map);
 		// Enable finding location
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
@@ -136,6 +137,7 @@ public class MapFragment extends Fragment implements LocationListener,
 	public void getAddress(Location location) {
 		map.clear();
 
+		(new GetAsyncResult()).execute(map);
 		this.AddressName = mLocationClient.getCurrentAddress();
 		this.myLocation = this.mLocationClient.getMyLocation();
 		this.currentLocation = new LatLng(this.myLocation.getLatitude(), this.myLocation.getLongitude());
@@ -154,6 +156,7 @@ public class MapFragment extends Fragment implements LocationListener,
 		super.onResume();
 		map.clear();
 
+		(new GetAsyncResult()).execute(map);
 		if (currentPositionMarker != null) {
 			currentPositionMarker.setVisible(false);
 			currentPositionMarker.remove();
