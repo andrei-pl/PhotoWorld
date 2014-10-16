@@ -1503,13 +1503,13 @@ containing a value of this type.
         public static final int always=0x7f08001e;
         public static final int beginning=0x7f080023;
         public static final int book_now=0x7f080010;
-        public static final int btnLogin=0x7f080051;
-        public static final int btnRegister=0x7f080050;
+        public static final int btnLogin=0x7f08004f;
+        public static final int btnRegister=0x7f08004e;
         public static final int buyButton=0x7f08000a;
         public static final int buy_now=0x7f08000f;
         public static final int buy_with_google=0x7f08000e;
         public static final int checkbox=0x7f08003f;
-        public static final int chkRemember=0x7f080053;
+        public static final int chkRemember=0x7f080051;
         public static final int classic=0x7f080011;
         public static final int collapseActionView=0x7f080020;
         public static final int currentImage=0x7f080058;
@@ -1577,8 +1577,8 @@ containing a value of this type.
         public static final int title=0x7f08003d;
         public static final int top_action_bar=0x7f080032;
         public static final int txtLabel=0x7f080054;
-        public static final int txtLogPass=0x7f08004f;
-        public static final int txtLogUser=0x7f08004e;
+        public static final int txtLogPass=0x7f080050;
+        public static final int txtLogUser=0x7f080053;
         public static final int txtRegConfirmPass=0x7f080061;
         public static final int txtRegPass=0x7f080060;
         public static final int txtRegUser=0x7f08005f;

@@ -17,12 +17,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.images.Image;
-import com.example.images.ImageAdapter;
-import com.example.images.ImageInfo;
+import com.example.adapter.ImageAdapter;
 import com.example.location.MyLocation;
 import com.example.login.R;
 import com.example.login.R.layout;
+import com.example.models.Image;
+import com.example.models.ImageInfo;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;

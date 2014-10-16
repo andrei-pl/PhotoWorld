@@ -3,8 +3,8 @@ package com.example.db;
 import java.sql.Date;
 import java.util.ArrayList;
 
-import com.example.images.ImageInfo;
 import com.example.location.MyLocation;
+import com.example.models.ImageInfo;
 import com.telerik.everlive.sdk.core.model.base.ItemBase;
 
 import android.R.integer;

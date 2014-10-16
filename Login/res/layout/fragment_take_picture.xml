@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="19dp"
+            android:layout_marginTop="16dp"
             android:text="Your picture"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -42,8 +42,11 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/currentImage"
             android:layout_below="@+id/currentImage"
-            android:layout_marginLeft="56dp"
-            android:layout_marginTop="23dp"
+            android:layout_marginTop="19dp"
+            android:paddingBottom="20dp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="20dp"
             android:text="Save" />
 
         <Button
@@ -53,8 +56,12 @@
             android:layout_alignBaseline="@+id/pictureOk"
             android:layout_alignBottom="@+id/pictureOk"
             android:layout_alignRight="@+id/currentImage"
-            android:layout_marginRight="37dp"
+            android:paddingBottom="20dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="20dp"
             android:text="Cancel" />
+
     </RelativeLayout>
 
 </ScrollView>

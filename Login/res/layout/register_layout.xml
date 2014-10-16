@@ -4,27 +4,29 @@
     android:layout_height="match_parent" >
 
     <EditText
-        android:id="@+id/txtRegUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="45dp"
-        android:ems="10"
-        android:hint="Username" />
-
-    <EditText
         android:id="@+id/txtRegPass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/txtRegUser"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="18dp"
         android:ems="10"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="14dp"
+        android:text="Register" />
 
     <EditText
         android:id="@+id/txtRegConfirmPass"
@@ -33,19 +35,20 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/txtRegPass"
-        android:layout_marginTop="34dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
         android:hint="Confirm Password"
         android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/btnRegister"
+    <EditText
+        android:id="@+id/txtRegUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/txtRegConfirmPass"
-        android:layout_marginTop="43dp"
-        android:text="Register" />
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:hint="Username" />
 
 </RelativeLayout>

@@ -8,10 +8,10 @@ import java.util.Locale;
 import java.util.UUID;
 
 import com.example.db.PhotoApp;
-import com.example.images.Image;
-import com.example.images.ImageInfo;
 import com.example.location.MyLocation;
 import com.example.location.MyLocationListener;
+import com.example.models.Image;
+import com.example.models.ImageInfo;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.telerik.everlive.sdk.core.EverliveApp;
