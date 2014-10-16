@@ -6,7 +6,7 @@ import android.content.SharedPreferences.Editor;
 
 public class UserManager
 {
-	public static final String HASHTABLE_NAME = "TEST";
+	public static final String HASHTABLE_NAME = "Users";
 	private Context mContext;
 	private String mUsername, mPassword;
 	private boolean mIsLogged;
@@ -35,6 +35,7 @@ public class UserManager
 	public void registerUser(String userName, String password) {
 		editor.putString("UserName", userName);
 		editor.putString("Passwords", password);
+		editor.commit();
 	}
 	
 	private void getCurrentUserData() {

@@ -1,0 +1,152 @@
+package com.example.db;
+
+import java.sql.Date;
+import java.util.ArrayList;
+
+import com.example.images.ImageInfo;
+import com.example.location.MyLocation;
+import com.telerik.everlive.sdk.core.model.base.ItemBase;
+
+import android.R.integer;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.location.LocationListener;
+
+public class UsersDB extends DBHelper {
+
+	private SQLiteDatabase db;
+	private static final String TABLE_USERS = "Users";
+	private static final String TABLE_PHOTOS = "Photos";
+
+	public UsersDB(SQLiteDatabase db, Context context, String name,
+			CursorFactory factory, int version) {
+		super(context, DB_NAME, null, DB_VERSION);
+
+		this.db = db;
+	}
+
+	public void registerUser(String username, String password,
+			String confirmPassword) throws Exception {
+
+		username = username.trim();
+
+		if (!password.equals(confirmPassword)) {
+			throw new Exception("Passsword and Confirm Password do not match!");
+		}
+		if (Character.isDigit(username.charAt(0))) {
+			throw new Exception("Username cannot start with digit!");
+		}
+		if (!Character.isLetter(username.charAt(0))) {
+			throw new Exception(
+					"The first symbol of username must be a letter!");
+		}
+		if (username.length() < 3) {
+			throw new Exception("Username must be at least 3 symbols long!");
+		}
+		if (password.length() < 3) {
+			throw new Exception("Password must be at least 3 symbols long!");
+		}
+		if(findId(username) > 0){
+			throw new Exception ("User with this name already exist.");
+		}
+		
+		for (int i = 1; i < username.length(); i++) {
+			if (!Character.isLetter(username.charAt(i))
+					|| !Character.isDigit(username.charAt(i))
+					|| username.charAt(i) != '_' || username.charAt(i) != '-') {
+				throw new Exception(
+						"Username must contains only digits, letters or \"_\" or \"-\"!");
+			}
+		}
+
+		ContentValues user = new ContentValues();
+		user.put("username", username);
+		user.put("password", password);
+		db.insert(TABLE_USERS, null, user);
+		db.close();
+	}
+
+	public boolean loginUser(String username, String password) {
+		Cursor userCursor = null;
+
+		if (username != null && password != null) {
+			String sql = "SELECT * FROM " + TABLE_USERS + " WHERE username='"
+					+ username + "' " + "AND password ='" + password + "'";
+
+			userCursor = db.rawQuery(sql, null);
+			boolean isLoggedIn = userCursor.moveToFirst();
+			if (isLoggedIn) {
+				// my user exist in the database record
+				userCursor.close();
+				return true;
+			}
+
+		}
+		if (userCursor != null)
+			userCursor.close();
+		return false;
+	}
+
+	public boolean addPhoto(String username, ImageInfo image) {
+		
+		if (username != null) {
+			
+			int userId = findId(username);
+			
+			String name = image.Filename;
+			java.util.Date date = image.publicationDate;
+			String  address = image.Address;
+			MyLocation location = image.location;
+			
+			String sql = "INSERT INTO " + TABLE_PHOTOS + "(name,publishDate,address,latitude,longitude,userId) VALUES('"
+			        + name + "','" + String.valueOf(date) + "','" + address + "','" + location.getLatitude() + "','" + location.getLongitude() +"','" + Integer.valueOf(userId) + "');";
+			db.execSQL(sql);
+			return true;
+		}
+		return false;
+	}
+
+	private int findId(String username) {
+		String sql = "SELECT _id FROM " + TABLE_USERS + " WHERE username='"
+				+ username + "'";
+		Cursor c = db.rawQuery(sql, null);
+		c.moveToFirst();
+		int userId = c.getInt(1);
+		c.close();
+		
+		if(userId <= 0){
+
+			return -1;
+		}
+		
+		return userId;
+	}
+
+	public ArrayList<ImageInfo> getAllBasketItems(String username) {
+		ArrayList<ImageInfo> temp = new ArrayList<ImageInfo>();
+		ArrayList<Integer> items = new ArrayList<Integer>();
+
+		int userId = findId(username);
+
+		String sql2 = "SELECT * FROM " + TABLE_PHOTOS + " WHERE userId="
+				+ String.valueOf(userId) + "'";
+
+		Cursor allItems = db.rawQuery(sql2, null);
+
+		while (allItems.moveToNext()) {
+			double latitude = allItems.getDouble(4);
+			double longitude = allItems.getDouble(5);
+
+			ImageInfo baseItem = new ImageInfo();
+			baseItem.Filename = allItems.getString(1);
+			baseItem.Address = allItems.getString(3);
+			baseItem.location = new MyLocation(latitude, longitude);
+			temp.add(baseItem);
+		}
+
+		return temp;
+	}
+}

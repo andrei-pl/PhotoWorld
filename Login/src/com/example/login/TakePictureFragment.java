@@ -161,6 +161,7 @@ public class TakePictureFragment extends Fragment {
 
 			// Get the name of the best provider
 			String provider = locationManager.getBestProvider(criteria, true);
+			
 			// provider = locationManager.GPS_PROVIDER;
 			locationManager.requestLocationUpdates(provider, 5000, 5, mLocationClient);
 

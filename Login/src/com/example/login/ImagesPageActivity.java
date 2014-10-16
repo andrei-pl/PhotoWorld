@@ -97,6 +97,7 @@ public class ImagesPageActivity extends FragmentActivity implements GooglePlaySe
 		}
 		
 		mLocationClient = MyLocationListener.Instance(this, this, this);
+		//Fragment frag = MapFragment.Instace(mLocationClient);
 	}
 	
 	@Override

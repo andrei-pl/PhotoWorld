@@ -1,7 +1,9 @@
 package com.example.login;
 
+import com.example.db.PhotoApp;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -69,20 +71,31 @@ public class MainActivity extends Activity implements View.OnClickListener
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v.getId() == R.id.btnLogin) {
-			mManager.logIn(editUser.getText().toString(), editPass.getText().toString(),remember.isChecked());
-			if(mManager.isLogged()) {
-				Toast.makeText(this, "Loged in", Toast.LENGTH_SHORT).show();
-				startActivity(imagesScreen);
+			String user = editUser.getText().toString();
+			String pass = editPass.getText().toString();
+			
+			try {
+				boolean isExist = ((PhotoApp) getApplication()).getUserDB().loginUser(user, pass);
 				
-				if(remember.isChecked()) {
-					
+				if(isExist){
+					mManager.registerUser(user, pass);
+					mManager.logIn(user, pass ,remember.isChecked());
+					if(mManager.isLogged()) {
+						Toast.makeText(this, "Loged in", Toast.LENGTH_SHORT).show();
+						startActivity(imagesScreen);
+						
+						if(remember.isChecked()) {
+							
+						}
+					} else {
+						Toast.makeText(this, "Username or password is invalid", Toast.LENGTH_SHORT).show();
+					}
 				}
-			} else {
-				Toast.makeText(this, "Dude,try again !", Toast.LENGTH_SHORT).show();
+			} catch (Exception e) {
+				Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
 			}
-		}
-		
-		if (v.getId() == R.id.btnRegister) {
+			
+		} else if (v.getId() == R.id.btnRegister) {
 			Intent screenRegister = new Intent(MainActivity.this, RegisterActivity.class);
 			startActivity(screenRegister);
 			

@@ -35,8 +35,6 @@ public class ImageInfo extends DataItem{
 	
 	public String Filename;
 
-	public String base64;
-	
 	public UUID pictureId;
     
 //	public UUID getOwner() {

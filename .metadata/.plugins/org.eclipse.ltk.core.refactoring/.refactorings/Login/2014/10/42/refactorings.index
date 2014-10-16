@@ -16,3 +16,6 @@
 1413385858475	Encapsulate field 'myLocation'
 1413386442516	Rename local variable 'myLocation'
 1413386454810	Rename local variable 'location'
+1413448031401	Move compilation unit
+1413459711160	Extract method 'findId'
+1413464663083	Rename field 'db'

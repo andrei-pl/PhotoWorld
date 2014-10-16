@@ -1,0 +1,46 @@
+package com.example.db;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+public class UsersDB {
+	private SQLiteDatabase db;
+	private static final String TABLE_NAME = "Users";
+
+	public UsersDB(SQLiteDatabase db) {
+		this.db = db;
+	}
+
+	public void addUser(String username, String password, String confirmPassword)
+			throws Exception {
+		if (password != confirmPassword) {
+			throw new Exception("Passsword and Confirm Password do not match!");
+		}
+		if (Character.isDigit(username.charAt(0))) {
+			throw new Exception("Username cannot start with digit!");
+		}
+		if (!Character.isLetter(username.charAt(0))) {
+			throw new Exception("The first symbol of username must be a letter!");
+		}
+
+		for (int i = 1; i < username.length(); i++) {
+			if(!Character.isLetter(username.charAt(i)) || !Character.isDigit(username.charAt(i) || username.charAt(i) != '_' || username.charAt(i)!='-'){
+				
+			}
+		}
+		url = url.trim();
+		ContentValues vals = new ContentValues();
+		vals.put("feed_url", url);
+		db.insert(TABLE_NAME, null, vals);
+	}
+
+	public Cursor getFeedsCursor() {
+		return db.query(TABLE_NAME, new String[] { "_id", "feed_url" }, null,
+				null, null, null, null);
+	}
+
+	public void deleteFeed(long ID) {
+		db.delete(TABLE_NAME, "_id=?", new String[] { String.valueOf(ID) });
+	}
+}
