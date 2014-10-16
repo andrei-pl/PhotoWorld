@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	protected static final String DB_NAME = "PhotoWorld";
-	protected static final int DB_VERSION = 1;
+	protected static final int DB_VERSION = 2;
 	protected SQLiteDatabase userDb;
 	
 	public DBHelper(Context context, String name, CursorFactory factory,
@@ -20,13 +20,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("create table Users (_id integer not null primary key autoincrement, username nvarchar2(3) not null, password nvarchar2(6) not null, photosId integer);");
-		db.execSQL("create table Photos (_id duid not null primary key, name nvarchar2 not null, publichDate date, address nvarchar2, latitude number, longitude number, userId integer not null, public boolean not null);");
+		db.execSQL("create table Photos (_id integer not null primary key autoincrement, publishDate date, name nvarchar2 not null, address nvarchar2, latitude number, longitude number, userId integer not null, public boolean not null);");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	public SQLiteDatabase open(){

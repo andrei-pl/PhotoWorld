@@ -32,6 +32,11 @@ public class UserManager
 		return mIsLogged;
 	}
 	
+	public String getCurrentUsername(){
+		this.mUsername = mPrefs.getString("UserName", "");
+		return mUsername;		
+	}
+	
 	public void registerUser(String userName, String password) {
 		editor.putString("UserName", userName);
 		editor.putString("Passwords", password);

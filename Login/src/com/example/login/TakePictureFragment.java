@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import com.example.db.PhotoApp;
 import com.example.images.Image;
 import com.example.images.ImageInfo;
 import com.example.location.MyLocation;
@@ -69,9 +70,11 @@ public class TakePictureFragment extends Fragment {
 
 		cancelBtn = (Button) view.findViewById(R.id.pictureCancel);
 		confirmBtn = (Button) view.findViewById(R.id.pictureOk);
+		cancelBtn.setVisibility(View.GONE);
 
 		cancelBtn.setOnClickListener(new CancelButton());
 		confirmBtn.setOnClickListener(new ConfirmButton());
+		confirmBtn.setVisibility(View.GONE);
 
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		File file = getOutputPhotoFile();
@@ -121,12 +124,15 @@ public class TakePictureFragment extends Fragment {
 	private void showPhoto(Uri photoUri) {
 		File imageFile = new File(photoUri.getPath());
 		if (imageFile.exists()) {
-			Bitmap bitmap = BitmapFactory.decodeFile(imageFile
-					.getAbsolutePath());
+			Bitmap bitmap = (Bitmap) data.getExtras().get("data");
 			BitmapDrawable drawable = new BitmapDrawable(this.getResources(),
 					bitmap);
 			currentImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			currentImage.setImageDrawable(drawable);
+
+			cancelBtn.setVisibility(View.VISIBLE);
+			confirmBtn.setVisibility(View.VISIBLE);
+
 		}
 	}
 
@@ -157,13 +163,15 @@ public class TakePictureFragment extends Fragment {
 			Criteria criteria = new Criteria();
 
 			// Get location manager object from System service LOCATION_SERVICE
-			LocationManager locationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+			LocationManager locationManager = (LocationManager) getActivity()
+					.getSystemService(getActivity().LOCATION_SERVICE);
 
 			// Get the name of the best provider
 			String provider = locationManager.getBestProvider(criteria, true);
-			
+
 			// provider = locationManager.GPS_PROVIDER;
-			locationManager.requestLocationUpdates(provider, 5000, 5, mLocationClient);
+			locationManager.requestLocationUpdates(provider, 5000, 5,
+					mLocationClient);
 
 			// Get current location
 			Location mLocation = locationManager.getLastKnownLocation(provider);
@@ -183,27 +191,48 @@ public class TakePictureFragment extends Fragment {
 
 			MyLocation myLocation = new MyLocation(mLocation.getLatitude(),
 					mLocation.getLongitude()); // keeps the last known
-													// location, so don't need
-													// to check
+												// location, so don't need
+												// to check
 
+			UserManager manager = new UserManager(getActivity());
 			ImageInfo imageInfo = new ImageInfo();
 			imageInfo.Picture = image;
 			imageInfo.setLocation(myLocation);
 			imageInfo.Address = MyLocationListener.getCurrentAddress();
 			imageInfo.setPublic(true);
-			// imageInfo.setOwner(new UUID(1, 1));
+			// imageInfo.setOwner(manager.getCurrentUsername());
 			imageInfo.setPublicationDate(new Date());
 
-			// Gson gson = new Gson();
-			// String json = gson.toJson(imageInfo);
-			everlive.workWith().data(ImageInfo.class).create(imageInfo)
-					.executeAsync();
+			try {
+				boolean isSavedInfoInDB = ((PhotoApp) getActivity()
+						.getApplication()).getUserDB().addPhoto(
+						manager.getCurrentUsername(), imageInfo);
 
-			FragmentTransaction fragTransaction = getFragmentManager()
-					.beginTransaction();
-			fragTransaction.replace(R.id.frame_container, new HomeFragment());
-			fragTransaction.addToBackStack(null);
-			fragTransaction.commit();
+				if (isSavedInfoInDB) {
+					Toast.makeText(getActivity(), "Photo successfully saved",
+							Toast.LENGTH_LONG).show();
+
+					// Gson gson = new Gson();
+					// String json = gson.toJson(imageInfo);
+					everlive.workWith().data(ImageInfo.class).create(imageInfo)
+							.executeAsync();
+
+					FragmentTransaction fragTransaction = getFragmentManager()
+							.beginTransaction();
+					fragTransaction.replace(R.id.frame_container,
+							new HomeFragment());
+					fragTransaction.addToBackStack(null);
+					fragTransaction.commit();
+				} else {
+					Toast.makeText(getActivity(),
+							"Something went wrong until saving the photo",
+							Toast.LENGTH_LONG).show();
+				}
+			} catch (Exception e) {
+				Toast.makeText(getActivity(), e.getMessage().toString(),
+						Toast.LENGTH_LONG).show();
+			}
 		}
 	}
+
 }

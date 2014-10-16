@@ -229,12 +229,12 @@ public class ImagesPageActivity extends FragmentActivity implements GooglePlaySe
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
+		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void onDisconnected() {
-		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT);
+		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT).show();
 	}
 
 }

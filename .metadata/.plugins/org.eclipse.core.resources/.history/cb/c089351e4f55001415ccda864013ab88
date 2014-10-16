@@ -1,0 +1,39 @@
+package com.example.db;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+	protected static final String DB_NAME = "PhotoWorld";
+	protected static final int DB_VERSION = 1;
+	protected SQLiteDatabase userDb;
+	
+	public DBHelper(Context context, String name, CursorFactory factory,
+			int version) {
+		super(context, DB_NAME, null, DB_VERSION);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		db.execSQL("create table Users (_id integer not null primary key autoincrement, username nvarchar2(3) not null, password nvarchar2(6) not null, photosId integer);");
+		db.execSQL("create table Photos (_id duid not null primary key, name nvarchar2 not null, publishDate date, address nvarchar2, latitude number, longitude number, userId integer not null, public boolean not null);");
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public SQLiteDatabase open(){
+		return getWritableDatabase();
+	}
+	
+	public void close (){
+		close();
+	}
+}

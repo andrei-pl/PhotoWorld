@@ -94,14 +94,15 @@ public class UsersDB {
 			java.util.Date date = image.publicationDate;
 			String address = image.Address;
 			MyLocation location = image.location;
+			boolean isPublic = image.Public;
 
 			String sql = "INSERT INTO "
 					+ TABLE_PHOTOS
-					+ "(name,publishDate,address,latitude,longitude,userId) VALUES('"
-					+ name + "','" + String.valueOf(date) + "','" + address
+					+ "(name,publishDate,address,latitude,longitude,userId,public) VALUES('"
+					+ name + "','" + date + "','" + address
 					+ "','" + location.getLatitude() + "','"
 					+ location.getLongitude() + "','" + Integer.valueOf(userId)
-					+ "');";
+					+ "','" + Boolean.valueOf(isPublic) + "');";
 			userDb.execSQL(sql);
 			return true;
 		}
