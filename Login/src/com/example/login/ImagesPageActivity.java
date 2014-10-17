@@ -180,8 +180,6 @@ public class ImagesPageActivity extends FragmentActivity implements GooglePlaySe
 			Log.e("MainActivity", "Error in creating fragment");
 		}
 	}
-	
-	
 
 	@Override
 	public void setTitle(CharSequence title) {
@@ -234,7 +232,7 @@ public class ImagesPageActivity extends FragmentActivity implements GooglePlaySe
 
 	@Override
 	public void onDisconnected() {
-		Toast.makeText(this, "GPS Connected", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "GPS Disconnected", Toast.LENGTH_SHORT).show();
 	}
 
 }

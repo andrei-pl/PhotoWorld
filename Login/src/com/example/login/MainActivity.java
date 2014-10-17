@@ -1,14 +1,22 @@
 package com.example.login;
 
 import com.example.db.PhotoApp;
+import com.example.service.PhotoCountService;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -97,8 +105,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 			
 		} else if (v.getId() == R.id.btnRegister) {
 			Intent screenRegister = new Intent(MainActivity.this, RegisterActivity.class);
-			startActivity(screenRegister);
-			
+			startActivity(screenRegister);		
 		}
 	}
 }

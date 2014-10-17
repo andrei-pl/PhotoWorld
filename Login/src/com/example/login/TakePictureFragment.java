@@ -79,7 +79,7 @@ public class TakePictureFragment extends Fragment {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		File file = getOutputPhotoFile();
 		fileUri = Uri.fromFile(file);
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+		//intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 		startActivityForResult(intent, CAMERA_REQUEST);
 		return view;
 	}
@@ -111,19 +111,19 @@ public class TakePictureFragment extends Fragment {
 				if (data == null) {
 					photoUri = fileUri;
 				} else {
-					photoUri = data.getData();
+					//photoUri = data.getData();
 					fileUri = photoUri;
-					this.data = data;
+					
 				}
-
-				showPhoto(photoUri);
+				
 			}
+			this.data = data;
+			showPhoto();
 		}
 	}
 
-	private void showPhoto(Uri photoUri) {
-		File imageFile = new File(photoUri.getPath());
-		if (imageFile.exists()) {
+	private void showPhoto() {
+
 			Bitmap bitmap = (Bitmap) data.getExtras().get("data");
 			BitmapDrawable drawable = new BitmapDrawable(this.getResources(),
 					bitmap);
@@ -133,7 +133,7 @@ public class TakePictureFragment extends Fragment {
 			cancelBtn.setVisibility(View.VISIBLE);
 			confirmBtn.setVisibility(View.VISIBLE);
 
-		}
+		
 	}
 
 	private class CancelButton implements OnClickListener {

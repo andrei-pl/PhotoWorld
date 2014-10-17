@@ -21,6 +21,7 @@ import com.example.adapter.ImageAdapter;
 import com.example.location.MyLocation;
 import com.example.login.R;
 import com.example.login.R.layout;
+import com.example.models.HolderCount;
 import com.example.models.Image;
 import com.example.models.ImageInfo;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,12 +44,14 @@ public class GetAsyncResult extends
 	private ListView photoList;
 	private FragmentActivity fragment;
 	private GoogleMap map;
+	private HolderCount holderCount;
 
 	@Override
 	protected ArrayList<ImageInfo> doInBackground(Object... params) {
 		if (params[0] instanceof FragmentActivity) {
 			this.fragment = (FragmentActivity) params[0];
 			this.photoList = (ListView) params[1];
+			this.holderCount = (HolderCount) params[2];
 		} else if (params[0] instanceof GoogleMap) {
 			this.map = (GoogleMap) params[0];
 		}
@@ -78,7 +81,8 @@ public class GetAsyncResult extends
 			JSONObject jsonObj = new JSONObject(sb.toString());
 			String count = jsonObj.get("Count").toString();
 			int number = Integer.parseInt(count);
-
+			holderCount.count = number;
+			
 			result = jsonObj.getJSONArray("Result"); // takes number of pictures
 														// in the object
 
@@ -185,6 +189,8 @@ public class GetAsyncResult extends
 				j++;
 			}
 		}
+		
+		
 	}
 
 }
